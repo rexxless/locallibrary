@@ -37,7 +37,7 @@ class Book(models.Model):
     author = models.ForeignKey('Author', on_delete=models.RESTRICT, null=True)
     # Foreign Key used because book can only have one author, but authors can have multiple books.
     # Author as a string rather than object because it hasn't been declared yet in file.
-    language_id = models.ForeignKey('Language', on_delete=models.RESTRICT, null=True)
+    language = models.ForeignKey('Language', on_delete=models.RESTRICT, null=True)
     summary = models.TextField(
         max_length=1000, help_text="Enter a brief description of the book")
     isbn = models.CharField('ISBN', max_length=13,
@@ -113,9 +113,22 @@ class Author(models.Model):
 
 class Language(models.Model):
     """Model representing a language."""
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.name}'
 
+    def get_absolute_url(self):
+        """Returns the url to access a particular language instance."""
+        return reverse('language-detail', args=[str(self.id)])
+
+    class Meta:
+        ordering = ['name']
+        constraints = [
+            UniqueConstraint(
+                Lower('name'),
+                name='language_name_case_insensitive_unique',
+                violation_error_message = "Language already exists (case-insensitive match)"
+            ),
+        ]
