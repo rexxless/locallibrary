@@ -9,3 +9,11 @@ urlpatterns = [
     re_path(r'^author/(?P<pk>\d+)$', views.AuthorDetailView.as_view(), name='book-detail'),
 
 ]
+
+urlpatterns += [
+    path('mybooks/', views.LoanedBooksByUserListView.as_view(), name='my-borrowed'),
+]
+
+urlpatterns += [
+    path('loans/', views.LoanedBooksAllListView.as_view(), name='loans'),
+]
